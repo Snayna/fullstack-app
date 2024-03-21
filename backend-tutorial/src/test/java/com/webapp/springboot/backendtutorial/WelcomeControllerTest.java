@@ -15,13 +15,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class WelcomeControllerTest {
 
+    private final String name = "Sunny";
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void getGreeting() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
+    public void getWelcomeDefaultRequestParam() throws Exception {
+        testGreetingController("/greeting", "World");
+    }
+
+    @Test
+    public void getWelcomePersonPathVariable() throws Exception {
+        testGreetingController("/greeting/%s", name);
+    }
+
+    @Test
+    public void getWelcomePersonRequestParam() throws Exception {
+        testGreetingController("/greeting?name=%s", name);
+    }
+
+    public void testGreetingController(String uri, String name) throws Exception {
+        String greeting = "Hello %s! Welcome to the Backend Tutorial :)";
+        mvc.perform(MockMvcRequestBuilders.get(String.format(uri, name)).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Welcome to Backend Tutorial"));
+                .andExpect(content().string(String.format(greeting, name)));
     }
 }
